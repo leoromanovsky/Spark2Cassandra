@@ -6,7 +6,7 @@ import com.datastax.spark.connector.writer.{ RowWriterFactory, SqlRowWriter }
 import com.github.jparkie.spark.cassandra.client.SparkCassSSTableLoaderClientManager
 import com.github.jparkie.spark.cassandra.conf.{ SparkCassServerConf, SparkCassWriteConf }
 import com.holdenkarau.spark.testing.SharedSparkContext
-import org.apache.spark.sql.{ Row, SQLContext }
+import org.apache.spark.sql.{ Row, SparkSession }
 import org.scalatest.{ MustMatchers, WordSpec }
 
 import scala.collection.JavaConverters._
@@ -33,9 +33,9 @@ class SparkCassBulkWriterSpec extends WordSpec with MustMatchers with CassandraS
 
   "SparkCassBulkWriter" must {
     "write() successfully" in {
-      val sqlContext = new SQLContext(sc)
+      val sparkContext = SparkSession.builder().getOrCreate()
 
-      import sqlContext.implicits._
+      import sparkContext.implicits._
 
       implicit val testRowWriterFactory: RowWriterFactory[Row] = SqlRowWriter.Factory
 

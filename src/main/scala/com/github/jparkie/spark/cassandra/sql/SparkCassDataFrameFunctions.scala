@@ -5,21 +5,21 @@ import com.datastax.spark.connector.writer.{ RowWriterFactory, SqlRowWriter }
 import com.datastax.spark.connector.{ AllColumns, ColumnSelector }
 import com.github.jparkie.spark.cassandra.SparkCassBulkWriter
 import com.github.jparkie.spark.cassandra.conf.{ SparkCassServerConf, SparkCassWriteConf }
-import org.apache.spark.sql.{ DataFrame, Row }
+import org.apache.spark.sql.{ Dataset, Row }
 
 /**
- * Extension of [[DataFrame]] with [[bulkLoadToCass()]] function.
+ * Extension of [[Dataset[T]]] with [[bulkLoadToCass()]] function.
  *
- * @param dataFrame The [[DataFrame]] to lift into extension.
+ * @param dataFrame The [[Dataset[T]]] to lift into extension.
  */
-class SparkCassDataFrameFunctions(dataFrame: DataFrame) extends Serializable {
+class SparkCassDataFrameFunctions(dataFrame: Dataset[Row]) extends Serializable {
   /**
    * SparkContext to schedule [[SparkCassBulkWriter]] Tasks.
    */
   private[sql] val internalSparkContext = dataFrame.sqlContext.sparkContext
 
   /**
-   * Loads the data from [[DataFrame]] to a Cassandra table. Uses the specified column names.
+   * Loads the data from [[Dataset[T]]] to a Cassandra table. Uses the specified column names.
    *
    * Writes SSTables to a temporary directory then loads the SSTables directly to Cassandra.
    *

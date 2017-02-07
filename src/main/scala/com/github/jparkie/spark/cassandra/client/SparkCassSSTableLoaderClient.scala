@@ -1,21 +1,24 @@
 package com.github.jparkie.spark.cassandra.client
 
-import com.datastax.driver.core.querybuilder.QueryBuilder
-import com.datastax.driver.core.{ ConsistencyLevel, Metadata, Session }
+import com.datastax.driver.core.{ Metadata, Row, Session }
 import com.github.jparkie.spark.cassandra.conf.SparkCassServerConf
-import org.apache.cassandra.config.CFMetaData
-import org.apache.cassandra.db.composites.CellNames
-import org.apache.cassandra.db.marshal.{ AbstractType, CompositeType, TypeParser, UTF8Type }
-import org.apache.cassandra.db.{ ColumnFamilyType, Keyspace, SystemKeyspace }
+import org.apache.cassandra.config.{ CFMetaData, ColumnDefinition }
+import org.apache.cassandra.cql3.ColumnIdentifier
+import org.apache.cassandra.db.marshal.ReversedType
+import org.apache.cassandra.dht.IPartitioner
 import org.apache.cassandra.io.sstable.SSTableLoader
+import org.apache.cassandra.schema.{ CQLTypeParser, SchemaKeyspace, Types }
 import org.apache.cassandra.streaming.StreamConnectionFactory
 import org.apache.cassandra.tools.BulkLoadConnectionFactory
+import org.apache.cassandra.utils.FBUtilities
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
 /**
  * Coordinates the streaming of SSTables to the proper Cassandra data nodes through automated column family discovery.
+ *
+ * Warning: This borrows heavily from [[org.apache.cassandra.utils.NativeSSTableLoaderClient]]
  *
  * @param session A prolonged [[Session]] to query system keyspaces.
  * @param sparkCassServerConf Configurations to connect to Cassandra Transport Layer.
@@ -26,33 +29,33 @@ class SparkCassSSTableLoaderClient(
 ) extends SSTableLoader.Client {
   import SparkCassSSTableLoaderClient._
 
-  private[client] val tables: mutable.Map[TableIdentifier, CFMetaData] = mutable.HashMap.empty[TableIdentifier, CFMetaData]
+  private[client] val tables: mutable.Map[String, CFMetaData] = mutable.HashMap.empty[String, CFMetaData]
 
   override def init(keyspace: String): Unit = {
     val cluster = session.getCluster
 
-    val metaData = cluster.getMetadata
-    val metaDataPartitioner = metaData.getPartitioner
+    val metadata = cluster.getMetadata
+    val partitioner = FBUtilities.newPartitioner(metadata.getPartitioner)
 
-    setPartitioner(metaDataPartitioner)
-
-    val tokenRanges = metaData.getTokenRanges.asScala
-    val tokenFactory = getPartitioner.getTokenFactory
+    val tokenRanges = metadata.getTokenRanges.asScala
+    val tokenFactory = partitioner.getTokenFactory
 
     for (tokenRange <- tokenRanges) {
-      val endpoints = metaData.getReplicas(Metadata.quote(keyspace), tokenRange).asScala
+      val endpoints = metadata.getReplicas(Metadata.quote(keyspace), tokenRange).asScala
 
       val range = new TokenRange(
         tokenFactory.fromString(tokenRange.getStart.getValue.toString),
         tokenFactory.fromString(tokenRange.getEnd.getValue.toString)
       )
 
-      for (endpoint <- endpoints) {
-        addRangeForEndpoint(range, endpoint.getAddress)
-      }
+      for (endpoint <- endpoints) addRangeForEndpoint(range, endpoint.getAddress)
     }
 
-    fetchCFMetaData(keyspace)
+    val types = fetchTypes(keyspace, session)
+
+    fetchTables(keyspace, session, partitioner, types)
+    // We only need the CFMetaData for the views, so we only load that.
+    fetchViews(keyspace, session, partitioner, types)
   }
 
   override def stop(): Unit = {
@@ -61,8 +64,8 @@ class SparkCassSSTableLoaderClient(
     }
   }
 
-  override def getCFMetaData(keyspace: String, cfName: String): CFMetaData = {
-    tables(TableIdentifier(keyspace, cfName))
+  override def getTableMetadata(tableName: String): CFMetaData = {
+    tables(tableName)
   }
 
   override def getConnectionFactory: StreamConnectionFactory = {
@@ -74,53 +77,81 @@ class SparkCassSSTableLoaderClient(
     )
   }
 
-  private def getCFColumnsWithoutCollections: List[String] = {
-    val allColumns = CFMetaData.SchemaColumnFamiliesCf.allColumnsInSelectOrder.asScala
-
-    allColumns
-      .filter(columnDefinition => !columnDefinition.`type`.isCollection)
-      .map(columnDefinition => UTF8Type.instance.getString(columnDefinition.name.bytes))
-      .toList
+  // See org.apache.cassandra.utils.NativeSSTableLoaderClient.fetchTypes
+  private def fetchTypes(keyspace: String, session: Session): Types = {
+    val query = s"SELECT * FROM ${SchemaKeyspace.NAME}.${SchemaKeyspace.TYPES} WHERE keyspace_name = ?"
+    val types = Types.rawBuilder(keyspace)
+    import scala.collection.JavaConversions._
+    for (row <- session.execute(query, keyspace)) {
+      val name = row.getString("type_name")
+      val fieldNames = row.getList("field_names", classOf[String])
+      val fieldTypes = row.getList("field_types", classOf[String])
+      types.add(name, fieldNames, fieldTypes)
+    }
+    types.build
   }
 
-  private def fetchCFMetaData(keyspace: String): Unit = {
-    def makeRawAbstractType(comparator: AbstractType[_], subComparator: AbstractType[_]): AbstractType[_] = {
-      if (subComparator == null) {
-        comparator
-      } else {
-        CompositeType.getInstance(List[AbstractType[_]](comparator, subComparator).asJava)
-      }
-    }
-
-    val selectColumns = getCFColumnsWithoutCollections
-
-    val queryStatement = QueryBuilder.select(selectColumns: _*)
-      .from(Keyspace.SYSTEM_KS, SystemKeyspace.SCHEMA_COLUMNFAMILIES_CF)
-      .where(QueryBuilder.eq("keyspace_name", keyspace))
-      .setConsistencyLevel(ConsistencyLevel.ONE)
-
-    val cfMetaDataRowIterator = session.execute(queryStatement).iterator.asScala
-    for (cfMetaDataRow <- cfMetaDataRowIterator) {
-      val cfName = cfMetaDataRow.getString("columnfamily_name")
-      val cfId = cfMetaDataRow.getUUID("cf_id")
-      val cfType = ColumnFamilyType.valueOf(cfMetaDataRow.getString("type"))
-      val cfRawComparator = TypeParser.parse(cfMetaDataRow.getString("comparator"))
-      val cfSubComparator = {
-        if (cfMetaDataRow.isNull("subcomparator"))
-          null
-        else
-          TypeParser.parse(cfMetaDataRow.getString("subcomparator"))
-      }
-      val cfIsDense = cfMetaDataRow.getBool("is_dense")
-      val cfComparator = CellNames.fromAbstractType(makeRawAbstractType(cfRawComparator, cfSubComparator), cfIsDense)
-
-      tables.put(TableIdentifier(keyspace, cfName), new CFMetaData(keyspace, cfName, cfType, cfComparator, cfId))
+  // See org.apache.cassandra.utils.NativeSSTableLoaderClient.fetchTables
+  private def fetchTables(keyspace: String, session: Session, partitioner: IPartitioner, types: Types): Unit = {
+    val query = s"SELECT * FROM ${SchemaKeyspace.NAME}.${SchemaKeyspace.TABLES} WHERE keyspace_name = ?"
+    import scala.collection.JavaConversions._
+    for (row <- session.execute(query, keyspace)) {
+      val name = row.getString("table_name")
+      tables.put(name, createTableMetadata(keyspace, session, partitioner, false, row, name, types))
     }
   }
+
+  // See org.apache.cassandra.utils.NativeSSTableLoaderClient.fetchViews
+  private def fetchViews(keyspace: String, session: Session, partitioner: IPartitioner, types: Types): Unit = {
+    val query = s"SELECT * FROM ${SchemaKeyspace.NAME}.${SchemaKeyspace.VIEWS} WHERE keyspace_name = ?"
+    import scala.collection.JavaConversions._
+    for (row <- session.execute(query, keyspace)) {
+      val name = row.getString("view_name")
+      tables.put(name, createTableMetadata(keyspace, session, partitioner, true, row, name, types))
+    }
+  }
+
+  // See org.apache.cassandra.utils.NativeSSTableLoaderClient.createTableMetadata
+  private def createTableMetadata(keyspace: String, session: Session, partitioner: IPartitioner, isView: Boolean, row: Row, name: String, types: Types): CFMetaData = {
+    val id = row.getUUID("id")
+
+    val flags =
+      if (isView) Set.empty[CFMetaData.Flag]
+      else CFMetaData.flagsFromStrings(row.getSet("flags", classOf[String])).asScala
+
+    val isSuper = flags.contains(CFMetaData.Flag.SUPER)
+    val isCounter = flags.contains(CFMetaData.Flag.COUNTER)
+    val isDense = flags.contains(CFMetaData.Flag.DENSE)
+    val isCompound = isView || flags.contains(CFMetaData.Flag.COMPOUND)
+    val columnsQuery = s"SELECT * FROM ${SchemaKeyspace.NAME}.${SchemaKeyspace.COLUMNS} WHERE keyspace_name = ? AND table_name = ?"
+
+    import scala.collection.JavaConversions._
+    val defs = new java.util.ArrayList[ColumnDefinition]()
+    for (colRow <- session.execute(columnsQuery, keyspace, name)) {
+      defs.add(createDefinitionFromRow(colRow, keyspace, name, types))
+    }
+
+    CFMetaData.create(keyspace, name, id, isDense, isCompound, isSuper, isCounter, isView, defs, partitioner)
+  }
+
+  // See org.apache.cassandra.utils.NativeSSTableLoaderClient.createDefinitionFromRow
+  private def createDefinitionFromRow(row: Row, keyspace: String, table: String, types: Types): ColumnDefinition = {
+    val cdName = ColumnIdentifier.getInterned(row.getBytes("column_name_bytes"), row.getString("column_name"))
+    val cdOrder = ClusteringOrder.withName(row.getString("clustering_order").toUpperCase)
+    var cdType = CQLTypeParser.parse(keyspace, row.getString("type"), types)
+    if (cdOrder eq ClusteringOrder.DESC) cdType = ReversedType.getInstance(cdType)
+    val cdPosition = row.getInt("position")
+    val cdKind = ColumnDefinition.Kind.valueOf(row.getString("kind").toUpperCase)
+    new ColumnDefinition(keyspace, table, cdName, cdType, cdPosition, cdKind)
+  }
+
+}
+
+// Cassandra 3.x has ClusteringOrder.NONE, which the datastax driver doesn't know about
+object ClusteringOrder extends Enumeration {
+  val ASC, DESC, NONE = Value
 }
 
 object SparkCassSSTableLoaderClient {
   type TokenRange = org.apache.cassandra.dht.Range[org.apache.cassandra.dht.Token]
-
-  case class TableIdentifier(keyspace: String, cfName: String)
 }

@@ -6,6 +6,9 @@ import org.apache.spark.rdd.RDD
 import scala.reflect.runtime.universe._
 
 package object rdd {
+
+  import scala.language.implicitConversions
+
   /**
    * Implicitly lift a [[RDD]] with [[SparkCassRDDFunctions]].
    *
