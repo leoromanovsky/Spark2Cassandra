@@ -75,62 +75,62 @@ object SparkCassServerConf {
   )
 
   val SPARK_CASSANDRA_BULK_SERVER_STORAGE_PORT = SparkCassConfParam[Int](
-    name = "spark.cassandra.bulk.server.storage.port",
+    name = "spark.cassandra_bulk.server.storage.port",
     default = 7000
   )
 
   val SPARK_CASSANDRA_BULK_SERVER_SSL_STORAGE_PORT = SparkCassConfParam[Int](
-    name = "spark.cassandra.bulk.server.sslStorage.port",
+    name = "spark.cassandra_bulk.server.sslStorage.port",
     default = 7001
   )
 
   val SPARK_CASSANDRA_BULK_SERVER_INTERNODE_ENCRYPTION = SparkCassConfParam[String](
-    name = "spark.cassandra.bulk.server.internode.encryption",
+    name = "spark.cassandra_bulk.server.internode.encryption",
     default = "none"
   )
 
   val SPARK_CASSANDRA_BULK_SERVER_KEYSTORE_PATH = SparkCassConfParam[String](
-    name = "spark.cassandra.bulk.server.keyStore.path",
+    name = "spark.cassandra_bulk.server.keyStore.path",
     default = "conf/.keystore"
   )
 
   val SPARK_CASSANDRA_BULK_SERVER_KEYSTORE_PASSWORD = SparkCassConfParam[String](
-    name = "spark.cassandra.bulk.server.keyStore.password",
+    name = "spark.cassandra_bulk.server.keyStore.password",
     default = "cassandra"
   )
 
   val SPARK_CASSANDRA_BULK_SERVER__TRUSTSTORE_PATH = SparkCassConfParam[String](
-    name = "spark.cassandra.bulk.server.trustStore.path",
+    name = "spark.cassandra_bulk.server.trustStore.path",
     default = "conf/.truststore"
   )
 
   val SPARK_CASSANDRA_BULK_SERVER_TRUSTSTORE_PASSWORD = SparkCassConfParam[String](
-    name = "spark.cassandra.bulk.server.trustStore.password",
+    name = "spark.cassandra_bulk.server.trustStore.password",
     default = "cassandra"
   )
 
   val SPARK_CASSANDRA_BULK_SERVER_PROTOCOL = SparkCassConfParam[String](
-    name = "spark.cassandra.bulk.server.protocol",
+    name = "spark.cassandra_bulk.server.protocol",
     default = "TLS"
   )
 
   val SPARK_CASSANDRA_BULK_SERVER_ALGORITHM = SparkCassConfParam[String](
-    name = "spark.cassandra.bulk.server.algorithm",
+    name = "spark.cassandra_bulk.server.algorithm",
     default = "SunX509"
   )
 
   val SPARK_CASSANDRA_BULK_SERVER_STORE_TYPE = SparkCassConfParam[String](
-    name = "spark.cassandra.bulk.server.store.type",
+    name = "spark.cassandra_bulk.server.store.type",
     default = "JKS"
   )
 
   val SPARK_CASSANDRA_BULK_SERVER_CIPHER_SUITES = SparkCassConfParam[Set[String]](
-    name = "spark.cassandra.bulk.server.cipherSuites",
+    name = "spark.cassandra_bulk.server.cipherSuites",
     default = Set("TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_256_CBC_SHA")
   )
 
   val SPARK_CASSANDRA_BULK_SERVER_REQUIRE_CLIENT_AUTH = SparkCassConfParam[Boolean](
-    name = "spark.cassandra.bulk.server.requireClientAuth",
+    name = "spark.cassandra_bulk.server.requireClientAuth",
     default = false
   )
 

@@ -8,18 +8,18 @@ class SparkCassServerConfSpec extends WordSpec with MustMatchers {
   "SparkCassServerConf" must {
     "be extracted from SparkConf successfully" in {
       val inputSparkConf = new SparkConf()
-        .set("spark.cassandra.bulk.server.storage.port", "1")
-        .set("spark.cassandra.bulk.server.sslStorage.port", "2")
-        .set("spark.cassandra.bulk.server.internode.encryption", "all")
-        .set("spark.cassandra.bulk.server.keyStore.path", "test_keystore_path")
-        .set("spark.cassandra.bulk.server.keyStore.password", "test_keystore_password")
-        .set("spark.cassandra.bulk.server.trustStore.path", "test_truststore_path")
-        .set("spark.cassandra.bulk.server.trustStore.password", "test_truststore_password")
-        .set("spark.cassandra.bulk.server.protocol", "test_protocol")
-        .set("spark.cassandra.bulk.server.algorithm", "test_algorithm")
-        .set("spark.cassandra.bulk.server.store.type", "test_store_type")
-        .set("spark.cassandra.bulk.server.cipherSuites", "test_cipher_suites_1,test_cipher_suites_2")
-        .set("spark.cassandra.bulk.server.requireClientAuth", "true")
+        .set("spark.cassandra_bulk.server.storage.port", "1")
+        .set("spark.cassandra_bulk.server.sslStorage.port", "2")
+        .set("spark.cassandra_bulk.server.internode.encryption", "all")
+        .set("spark.cassandra_bulk.server.keyStore.path", "test_keystore_path")
+        .set("spark.cassandra_bulk.server.keyStore.password", "test_keystore_password")
+        .set("spark.cassandra_bulk.server.trustStore.path", "test_truststore_path")
+        .set("spark.cassandra_bulk.server.trustStore.password", "test_truststore_password")
+        .set("spark.cassandra_bulk.server.protocol", "test_protocol")
+        .set("spark.cassandra_bulk.server.algorithm", "test_algorithm")
+        .set("spark.cassandra_bulk.server.store.type", "test_store_type")
+        .set("spark.cassandra_bulk.server.cipherSuites", "test_cipher_suites_1,test_cipher_suites_2")
+        .set("spark.cassandra_bulk.server.requireClientAuth", "true")
 
       val outputSparkCassServerConf = SparkCassServerConf.fromSparkConf(inputSparkConf)
 
@@ -70,7 +70,7 @@ class SparkCassServerConfSpec extends WordSpec with MustMatchers {
 
     "reject invalid internode encryption in SparkConf" in {
       val inputSparkConf = new SparkConf()
-        .set("spark.cassandra.bulk.server.internode.encryption", "N/A")
+        .set("spark.cassandra_bulk.server.internode.encryption", "N/A")
 
       intercept[IllegalArgumentException] {
         SparkCassServerConf.fromSparkConf(inputSparkConf)

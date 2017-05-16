@@ -66,17 +66,17 @@ object SparkCassWriteConf {
   )
 
   val SPARK_CASSANDRA_BULK_WRITE_PARTITIONER = SparkCassConfParam[String](
-    name = "spark.cassandra.bulk.write.partitioner",
+    name = "spark.cassandra_bulk.write.partitioner",
     default = "org.apache.cassandra.dht.Murmur3Partitioner"
   )
 
   val SPARK_CASSANDRA_BULK_WRITE_THROUGHPUT_MB_PER_SEC = SparkCassConfParam[Int](
-    name = "spark.cassandra.bulk.write.throughput_mb_per_sec",
+    name = "spark.cassandra_bulk.write.throughput_mb_per_sec",
     default = Int.MaxValue
   )
 
   val SPARK_CASSANDRA_BULK_WRITE_CONNECTIONS_PER_HOST = SparkCassConfParam[Int](
-    name = "spark.cassandra.bulk.write.connection_per_host",
+    name = "spark.cassandra_bulk.write.connection_per_host",
     default = 1
   )
 
