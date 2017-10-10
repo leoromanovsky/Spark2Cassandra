@@ -8,7 +8,7 @@ import com.github.jparkie.spark.cassandra.conf.{ SparkCassServerConf, SparkCassW
 import org.apache.spark.sql.{ DataFrame, Row }
 
 /**
- * Extension of [[DataFrame]] with [[bulkLoadToCass()]] function.
+ * Extension of [[DataFrame]] with [[bulkLoadToCassandra()]] function.
  *
  * @param dataFrame The [[DataFrame]] to lift into extension.
  */
@@ -31,7 +31,7 @@ class SparkCassDataFrameFunctions(dataFrame: DataFrame) extends Serializable {
    * @param sparkCassWriteConf Configurations to coordinate and to limit writes.
    * @param sparkCassServerConf Configurations to connect to Cassandra Transport Layer.
    */
-  def bulkLoadToCass(
+  def bulkLoadToCassandra(
     keyspaceName:        String,
     tableName:           String,
     columns:             ColumnSelector      = AllColumns,

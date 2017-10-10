@@ -2,28 +2,22 @@
 
 Spark Library for Bulk Loading into Cassandra
 
-[![Build Status](https://travis-ci.org/jparkie/Spark2Cassandra.svg?branch=master)](https://travis-ci.org/jparkie/Spark2Cassandra)
+[![Build Status](https://travis-ci.org/leoromanovsky/Spark2Cassandra.svg?branch=master)](https://travis-ci.org/jparkie/Spark2Cassandra)
 
 ## Requirements
 
-Spark2Cassandra supports Spark 1.5 and above.
+Spark2Cassandra supports Spark 2.2 and above.
 
 | Spark2Cassandra Version | Cassandra Version |
 | ------------------------| ----------------- |
-| `2.1.X`                 | `2.1.5+`          |
-| `2.2.X`                 | `2.1.X`           |
+| `3.0.0`                 | `2.1.5+`          |
 
 ## Downloads
 
 #### SBT
-```scala
-libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "2.1.0"
-```
-
-Or:
 
 ```scala
-libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "2.2.0"
+libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "3.0.0-SNAPSHOT"
 ```
 
 Add the following resolver if needed:
@@ -34,12 +28,9 @@ resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repos
 ```
 
 #### Maven
+
 ```xml
-<dependency>
-  <groupId>com.github.jparkie</groupId>
-  <artifactId>spark2cassandra_2.10</artifactId>
-  <version>x.y.z-SNAPSHOT</version>
-</dependency>
+libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "x.y.z"
 ```
 
 It is planned for Spark2Cassandra to be available on the following:
@@ -54,7 +45,7 @@ It is planned for Spark2Cassandra to be available on the following:
 ### Bulk Loading into Cassandra
 
 ```scala
-// Import the following to have access to the `bulkLoadToEs()` function for RDDs or DataFrames.
+// Import the following to have access to the `bulkLoadToCassandra()` function for RDDs or DataFrames.
 import com.github.jparkie.spark.cassandra.rdd._
 import com.github.jparkie.spark.cassandra.sql._
 
@@ -67,20 +58,20 @@ val rdd = sc.parallelize(???)
 val df = sqlContext.read.parquet("<PATH>")
 
 // Specify the `keyspaceName` and the `tableName` to write.
-rdd.bulkLoadToCass(
+rdd.bulkLoadToCassandra(
   keyspaceName = "twitter",
   tableName = "tweets_by_date"
 )
 
 // Specify the `keyspaceName` and the `tableName` to write.
-df.bulkLoadToCass(
+df.bulkLoadToCassandra(
   keyspaceName = "twitter",
   tableName = "tweets_by_author"
 )
 ```
 
-Refer to for more: [SparkCassRDDFunction.scala](https://github.com/jparkie/Spark2Cassandra/blob/master/src/main/scala/com/github/jparkie/spark/cassandra/rdd/SparkCassRDDFunctions.scala)
-Refer to for more: [SparkCassDataFrameFunctions.scala](https://github.com/jparkie/Spark2Cassandra/blob/master/src/main/scala/com/github/jparkie/spark/cassandra/sql/SparkCassDataFrameFunctions.scala)
+* [SparkCassRDDFunction.scala](https://github.com/jparkie/Spark2Cassandra/blob/master/src/main/scala/com/github/jparkie/spark/cassandra/rdd/SparkCassRDDFunctions.scala)
+* [SparkCassDataFrameFunctions.scala](https://github.com/jparkie/Spark2Cassandra/blob/master/src/main/scala/com/github/jparkie/spark/cassandra/sql/SparkCassDataFrameFunctions.scala)
 
 ## Configurations
 
@@ -88,7 +79,7 @@ As Spark2Cassandra utilizes https://github.com/datastax/spark-cassandra-connecto
 
 ### SparkCassWriteConf
 
-Refer to for more: [SparkCassWriteConf.scala](https://github.com/jparkie/Spark2Cassandra/blob/master/src/main/scala/com/github/jparkie/spark/cassandra/conf/SparkCassWriteConf.scala)
+For more, refer to: [SparkCassWriteConf.scala](https://github.com/jparkie/Spark2Cassandra/blob/master/src/main/scala/com/github/jparkie/spark/cassandra/conf/SparkCassWriteConf.scala)
 
 | Property Name                                       | Default                                     | Description |
 | --------------------------------------------------- |:-------------------------------------------:| ------------|

@@ -48,6 +48,14 @@ libraryDependencies ++= Seq(
   cassandraUnit,
   "ch.qos.logback"             %  "logback-classic" % "1.2.3",
   "com.typesafe.scala-logging" %% "scala-logging"   % "3.7.2"
+).map(_.excludeAll(
+    new ExclusionRule("org.apache.logging.log4j", "log4j-slf4j-impl"),
+    new ExclusionRule("log4j", "log4j"),
+    new ExclusionRule("commons-logging", "commons-logging"),
+    new ExclusionRule("org.slf4j", "slf4j-jdk14"),
+    new ExclusionRule("org.slf4j", "slf4j-log4j12"),
+    new ExclusionRule("org.slf4j", "slf4j-jcl")
+  )
 )
 
 // Force cassandraUnit and ssc to utilize cassandraAll, cassandraClient.

@@ -11,7 +11,7 @@ import org.apache.spark.rdd.RDD
 import scala.reflect.runtime.universe._
 
 /**
- * Extension of [[RDD]] with [[bulkLoadToCass()]] function.
+ * Extension of [[RDD]] with [[bulkLoadToCassandra()]] function.
  *
  * @param rdd The [[RDD]] to lift into extension.
  */
@@ -34,7 +34,7 @@ class SparkCassRDDFunctions[T: ColumnMapper: TypeTag](rdd: RDD[T]) extends Seria
    * @param sparkCassWriteConf Configurations to coordinate and to limit writes.
    * @param sparkCassServerConf Configurations to connect to Cassandra Transport Layer.
    */
-  def bulkLoadToCass(
+  def bulkLoadToCassandra(
     keyspaceName:        String,
     tableName:           String,
     columns:             ColumnSelector      = AllColumns,
