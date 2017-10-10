@@ -1,11 +1,9 @@
 language: scala
 
 scala:
-   - 2.10.6
-   - 2.11.7
+   - 2.11.8
 
 jdk:
-  - oraclejdk7
   - oraclejdk8
 
 sudo: false
@@ -15,7 +13,4 @@ cache:
     - $HOME/.ivy2
 
 script:
-  - sbt clean coverage test
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - sbt ++$TRAVIS_SCALA_VERSION test
