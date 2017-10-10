@@ -1,26 +1,26 @@
 package com.github.jparkie.spark.cassandra
 
-import grizzled.slf4j.Logging
+import com.typesafe.scalalogging.LazyLogging
 import org.apache.cassandra.utils.OutputHandler
 import org.slf4j.Logger
 
 /**
  * A wrapper for [[Logger]] for [[com.github.jparkie.spark.cassandra.client.SparkCassSSTableLoaderClient]].
  */
-class SparkCassOutputHandler extends OutputHandler with Logging {
+class SparkCassOutputHandler extends OutputHandler with LazyLogging {
   override def warn(msg: String): Unit = {
-    warn(msg)
+    logger.warn(msg)
   }
 
   override def warn(msg: String, th: Throwable): Unit = {
-    warn(msg, th)
+    logger.warn(msg, th)
   }
 
   override def debug(msg: String): Unit = {
-    debug(msg)
+    logger.debug(msg)
   }
 
   override def output(msg: String): Unit = {
-    info(msg)
+    logger.info(msg)
   }
 }

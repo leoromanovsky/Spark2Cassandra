@@ -2,9 +2,9 @@ package com.github.jparkie.spark.cassandra
 
 import java.net.InetAddress
 
-import grizzled.slf4j.Logging
+import com.typesafe.scalalogging.LazyLogging
 import org.apache.cassandra.streaming.StreamEvent._
-import org.apache.cassandra.streaming.{ SessionInfo, StreamEvent, StreamEventHandler, StreamState }
+import org.apache.cassandra.streaming.{SessionInfo, StreamEvent, StreamEventHandler, StreamState}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -13,7 +13,7 @@ import scala.collection.mutable
  * A [[StreamEventHandler]] that logs the current progress of SSTable streaming
  * with completion status, transfer rate, and percentage.
  */
-class SparkCassStreamEventHandler() extends StreamEventHandler with Logging {
+class SparkCassStreamEventHandler() extends StreamEventHandler with LazyLogging {
   class SessionHostMap extends mutable.HashMap[InetAddress, mutable.Set[SessionInfo]]
     with mutable.MultiMap[InetAddress, SessionInfo]
 
@@ -57,14 +57,14 @@ class SparkCassStreamEventHandler() extends StreamEventHandler with Logging {
     val currentSessionInfo = sessionPreparedEvent.session
     sessionHostMap.addBinding(currentSessionInfo.peer, currentSessionInfo)
 
-    info(s"Session to ${currentSessionInfo.connecting.getHostAddress}.")
+    logger.info(s"Session to ${currentSessionInfo.connecting.getHostAddress}.")
   }
 
   private def handleStreamComplete(sessionCompleteEvent: SessionCompleteEvent): Unit = {
     if (sessionCompleteEvent.success) {
-      info(s"Stream to ${sessionCompleteEvent.peer.getHostAddress} successful.")
+      logger.info(s"Stream to ${sessionCompleteEvent.peer.getHostAddress} successful.")
     } else {
-      info(s"Stream to ${sessionCompleteEvent.peer.getHostAddress} failed.")
+      logger.info(s"Stream to ${sessionCompleteEvent.peer.getHostAddress} failed.")
     }
   }
 
@@ -141,6 +141,6 @@ class SparkCassStreamEventHandler() extends StreamEventHandler with Logging {
 
     currentProgressBuilder.append(s"(Average: $averageRate MB/s)")
 
-    info(currentProgressBuilder.toString.trim)
+    logger.info(currentProgressBuilder.toString.trim)
   }
 }

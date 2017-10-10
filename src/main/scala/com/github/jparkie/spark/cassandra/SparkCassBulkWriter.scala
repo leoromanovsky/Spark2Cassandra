@@ -14,7 +14,7 @@ import com.datastax.spark.connector.{CollectionColumnName, ColumnRef, ColumnSele
 import com.github.jparkie.spark.cassandra.client.{SparkCassSSTableLoaderClient, SparkCassSSTableLoaderClientManager}
 import com.github.jparkie.spark.cassandra.conf.{SparkCassServerConf, SparkCassWriteConf}
 import com.github.jparkie.spark.cassandra.util.SparkCassException
-import grizzled.slf4j.Logging
+import com.typesafe.scalalogging.LazyLogging
 import org.apache.cassandra.config.DatabaseDescriptor
 import org.apache.cassandra.io.sstable.{CQLSSTableWriter, SSTableLoader}
 import org.apache.commons.io.FileUtils
@@ -31,7 +31,7 @@ class SparkCassBulkWriter[T](
   rowWriter:           RowWriter[T],
   sparkCassWriteConf:  SparkCassWriteConf,
   sparkCassServerConf: SparkCassServerConf
-) extends Serializable with Logging {
+) extends Serializable with LazyLogging {
   val keyspaceName: String = tableDef.keyspaceName
   val tableName: String = tableDef.tableName
   val columnNames: Seq[String] = rowWriter.columnNames diff sparkCassWriteConf.optionPlaceholders
@@ -135,7 +135,7 @@ class SparkCassBulkWriter[T](
       .withBufferSizeInMB(256)
     val ssTableWriter = ssTableBuilder.build()
 
-    info(s"Writing rows to temporary SSTables in ${ssTableDirectory.getAbsolutePath}.")
+    logger.info(s"Writing rows to temporary SSTables in ${ssTableDirectory.getAbsolutePath}.")
 
     val startTime = System.nanoTime()
 
@@ -177,7 +177,7 @@ class SparkCassBulkWriter[T](
 
           rowIndex += 1
           if (rowIndex % 100000 == 0) {
-            info(s"Wrote $rowIndex rows to temporary SSTables in  ${ssTableDirectory.getAbsolutePath}")
+            logger.info(s"Wrote $rowIndex rows to temporary SSTables in  ${ssTableDirectory.getAbsolutePath}")
           }
           if (rowIndex % 500000 == 0) {
             printSStableFileSizes(ssTableDirectory)
@@ -197,7 +197,7 @@ class SparkCassBulkWriter[T](
     val endTime = System.nanoTime()
     val duration = (endTime - startTime) / 1000000000d
 
-    info(s"Wrote rows to temporary SSTables in ${ssTableDirectory.getAbsolutePath} in $duration%.3f s.")
+    logger.info(s"Wrote rows to temporary SSTables in ${ssTableDirectory.getAbsolutePath} in $duration%.3f s.")
   }
 
   private[cassandra] def streamSSTables(ssTableDirectory: File, sparkCassSSTableLoaderClient: SparkCassSSTableLoaderClient): Unit = {
@@ -235,19 +235,19 @@ class SparkCassBulkWriter[T](
   def write(taskContext: TaskContext, data: Iterator[T]): Unit = {
     val tempSSTableDirectory = prepareSSTableDirectory()
 
-    info(s"Created temporary file directory for SSTables at ${tempSSTableDirectory.getAbsolutePath}.")
+    logger.info(s"Created temporary file directory for SSTables at ${tempSSTableDirectory.getAbsolutePath}.")
 
     try {
       val ssTableLoaderClient = SparkCassSSTableLoaderClientManager.getClient(cassandraConnector, sparkCassServerConf)
       val ssTableStatement = prepareDataStatement(ssTableLoaderClient.session)
 
       writeRowsToSSTables(tempSSTableDirectory, ssTableStatement, data)
-      info(s"Finished writing SSTables to ${tempSSTableDirectory.getAbsolutePath}")
+      logger.info(s"Finished writing SSTables to ${tempSSTableDirectory.getAbsolutePath}")
 
       printDirSizes(tempSSTableDirectory)
 
       streamSSTables(tempSSTableDirectory, ssTableLoaderClient)
-      info(s"Finished stream of SSTables from ${tempSSTableDirectory.getAbsolutePath}.")
+      logger.info(s"Finished stream of SSTables from ${tempSSTableDirectory.getAbsolutePath}.")
 
     } finally {
       if (tempSSTableDirectory.exists()) {
@@ -258,17 +258,17 @@ class SparkCassBulkWriter[T](
 
   private[cassandra] def printDirSizes(dir: File): Unit = {
     val files = dir.listFiles()
-    info(s"Total number of files: ${files.size}")
+    logger.info(s"Total number of files: ${files.size}")
 
     files.sortBy(-_.length()).foreach{ file =>
-      info(s"  ${file.getAbsolutePath}: ${file.length()}")
+      logger.info(s"  ${file.getAbsolutePath}: ${file.length()}")
     }
   }
 
   private[cassandra] def printSStableFileSizes(dir: File): Unit = {
     val files = dir.listFiles().filter(_.getName.contains("Data.db"))
     val sizesMB = files.map(_.length().toDouble/1024/1024)
-    info(s"""SSTable <Data.db> files, count: ${files.length}, sizes(MB): ${sizesMB.mkString(", ")}""")
+    logger.info(s"""SSTable <Data.db> files, count: ${files.length}, sizes(MB): ${sizesMB.mkString(", ")}""")
   }
 }
 

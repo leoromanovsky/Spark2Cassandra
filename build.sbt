@@ -26,10 +26,7 @@ val ScalaTestVersion               = "3.0.3"
 val SparkCassandraConnectorVersion = "2.0.5"
 val CassandraAllVersion            = "3.11.0"
 val CassandraClientutilVersion     = "3.0.14"
-val CassandraUnitVersion           = "3.1.3.2"
-val GrizzledSl4jVersion            = "1.3.1"
-val GuavaVersion                   = "22.0"
-val Slf4jVersion                   = "1.7.7"
+val CassandraUnitVersion           = "3.3.0.2"
 
 // Dependencies:
 val sparkCore       = "org.apache.spark"     %% "spark-core"                % SparkVersion                   % "provided"
@@ -40,9 +37,6 @@ val ssc             = "com.datastax.spark"   %% "spark-cassandra-connector" % Sp
 val cassandraAll    = "org.apache.cassandra" %  "cassandra-all"             % CassandraAllVersion
 val cassandraClient = "org.apache.cassandra" %  "cassandra-clientutil"      % CassandraClientutilVersion
 val cassandraUnit   = "org.cassandraunit"    %  "cassandra-unit"            % CassandraUnitVersion           % "test"
-val grizzledSl4j    = "org.clapper"          %% "grizzled-slf4j"            % GrizzledSl4jVersion
-val guava           = "com.google.guava"     %  "guava"                     % GuavaVersion
-val jclOverSlf4j    = "org.slf4j"            % "jcl-over-slf4j"             % Slf4jVersion
 
 libraryDependencies ++= Seq(
   sparkCore,
@@ -52,9 +46,8 @@ libraryDependencies ++= Seq(
   ssc,
   cassandraAll,
   cassandraUnit,
-  grizzledSl4j,
-  guava,
-  jclOverSlf4j
+  "ch.qos.logback"             %  "logback-classic" % "1.2.3",
+  "com.typesafe.scala-logging" %% "scala-logging"   % "3.7.2"
 )
 
 // Force cassandraUnit and ssc to utilize cassandraAll, cassandraClient.

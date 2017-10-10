@@ -2,13 +2,13 @@ package com.github.jparkie.spark.cassandra.client
 
 import java.net.InetAddress
 
-import com.datastax.spark.connector.cql.{ AuthConf, CassandraConnector }
+import com.datastax.spark.connector.cql.{AuthConf, CassandraConnector}
 import com.github.jparkie.spark.cassandra.conf.SparkCassServerConf
-import grizzled.slf4j.Logging
+import com.typesafe.scalalogging.LazyLogging
 
 import scala.collection.mutable
 
-private[cassandra] trait SparkCassSSTableLoaderClientManager extends Serializable with Logging {
+private[cassandra] trait SparkCassSSTableLoaderClientManager extends Serializable with LazyLogging {
   case class SessionKey(
     hosts:               Set[InetAddress],
     port:                Int,
@@ -32,12 +32,12 @@ private[cassandra] trait SparkCassSSTableLoaderClientManager extends Serializabl
   ): SparkCassSSTableLoaderClient = {
     val newSession = cassandraConnector.openSession()
 
-    info(s"Created SSTableLoaderClient to the following Cassandra nodes: ${cassandraConnector.hosts}")
+    logger.info(s"Created SSTableLoaderClient to the following Cassandra nodes: ${cassandraConnector.hosts}")
 
     val sparkCassSSTableLoaderClient = new SparkCassSSTableLoaderClient(newSession, sparkCassServerConf)
 
     sys.addShutdownHook {
-      info("Closed Cassandra Session for SSTableLoaderClient.")
+      logger.info("Closed Cassandra Session for SSTableLoaderClient.")
 
       sparkCassSSTableLoaderClient.stop()
     }
