@@ -20,10 +20,10 @@ scalaVersion       := "2.11.8"
   */
 
 // Versions:
-val SparkVersion                   = "2.0.2"
-val SparkTestVersion               = "2.0.2_0.7.1"
+val SparkVersion                   = "2.2.0"
+val SparkTestVersion               = "2.2.0_0.7.1"
 val ScalaTestVersion               = "3.0.3"
-val SparkCassandraConnectorVersion = "2.0.1"
+val SparkCassandraConnectorVersion = "2.0.5"
 val CassandraAllVersion            = "3.11.0"
 val CassandraClientutilVersion     = "3.0.14"
 val CassandraUnitVersion           = "3.1.3.2"
@@ -44,8 +44,18 @@ val grizzledSl4j    = "org.clapper"          %% "grizzled-slf4j"            % Gr
 val guava           = "com.google.guava"     %  "guava"                     % GuavaVersion
 val jclOverSlf4j    = "org.slf4j"            % "jcl-over-slf4j"             % Slf4jVersion
 
-
-libraryDependencies ++= Seq(sparkCore, sparkSql, sparkTest, scalaTest, ssc, cassandraAll, cassandraUnit, grizzledSl4j, guava, jclOverSlf4j)
+libraryDependencies ++= Seq(
+  sparkCore,
+  sparkSql,
+  sparkTest,
+  scalaTest,
+  ssc,
+  cassandraAll,
+  cassandraUnit,
+  grizzledSl4j,
+  guava,
+  jclOverSlf4j
+)
 
 // Force cassandraUnit and ssc to utilize cassandraAll, cassandraClient.
 dependencyOverrides ++= Set(cassandraAll, cassandraClient)
