@@ -2,28 +2,26 @@
 
 Spark Library for Bulk Loading into Cassandra
 
-[![Build Status](https://travis-ci.org/jparkie/Spark2Cassandra.svg?branch=master)](https://travis-ci.org/jparkie/Spark2Cassandra)
+[![Build Status](https://travis-ci.org/leoromanovsky/Spark2Cassandra.svg?branch=master)](https://travis-ci.org/jparkie/Spark2Cassandra)
 
 ## Requirements
 
 Spark2Cassandra supports Spark 1.5 and above.
 
+# TODO: Does 3.0.0 it still work with Spark 1.5 ?
+
 | Spark2Cassandra Version | Cassandra Version |
 | ------------------------| ----------------- |
 | `2.1.X`                 | `2.1.5+`          |
 | `2.2.X`                 | `2.1.X`           |
+| `3.0.0`                 | `2.1.x`           |
 
 ## Downloads
 
 #### SBT
-```scala
-libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "2.1.0"
-```
-
-Or:
 
 ```scala
-libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "2.2.0"
+libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "3.0.0"
 ```
 
 Add the following resolver if needed:
@@ -61,6 +59,9 @@ import com.github.jparkie.spark.cassandra.sql._
 val sparkConf = new SparkConf()
 val sc = SparkContext.getOrCreate(sparkConf)
 val sqlContext = SQLContext.getOrCreate(sc)
+
+// https://datastax-oss.atlassian.net/browse/SPARKC-475
+implicit val rwf: RowWriterFactory[Row] = SqlRowWriter.Factory
 
 val rdd = sc.parallelize(???)
 
