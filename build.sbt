@@ -5,8 +5,8 @@ import scalariform.formatter.preferences._
 /**
   * Organization:
   */
-organization     := "com.github.jparkie"
-organizationName := "jparkie"
+organization     := "com.github.leoromanovsky"
+organizationName := "leoromanovsky"
 
 /**
   * Library Meta:
@@ -81,39 +81,8 @@ assemblyShadeRules in assembly := Seq(
 )
 
 /**
-  * Publishing to Sonatype:
-  */
-publishMavenStyle := true
-
-publishArtifact in Test := false
-
-publishTo := {
-  val nexus = "https://oss.sonatype.org/"
-  if (isSnapshot.value)
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases" at nexus + "service/local/staging/deploy/maven2")
-}
-
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
-
-pomExtra := {
-  <url>https://github.com/jparkie/Spark2Cassandra</url>
-    <scm>
-      <url>git@github.com:jparkie/Spark2Cassandra.git</url>
-      <connection>scm:git:git@github.com:jparkie/Spark2Cassandra.git</connection>
-    </scm>
-    <developers>
-      <developer>
-        <id>jparkie</id>
-        <name>Jacob Park</name>
-        <url>https://github.com/jparkie</url>
-      </developer>
-    </developers>
-}
-
-/**
   * Release:
+  * https://github.com/xerial/sbt-sonatype
   */
 import ReleaseTransformations._
 
@@ -122,12 +91,14 @@ releasePublishArtifactsAction := PgpKeys.publishSigned.value
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
   inquireVersions,
+  runClean,
   runTest,
   setReleaseVersion,
   commitReleaseVersion,
   tagRelease,
-  publishArtifacts,
+  releaseStepCommand("publishSigned"),
   setNextVersion,
   commitNextVersion,
+  releaseStepCommand("sonatypeReleaseAll"),
   pushChanges
 )
