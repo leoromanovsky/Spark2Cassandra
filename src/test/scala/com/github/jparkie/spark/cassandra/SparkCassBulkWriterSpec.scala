@@ -10,7 +10,7 @@ import com.holdenkarau.spark.testing.{DataFrameSuiteBase, SharedSparkContext}
 import org.apache.spark.sql.Row
 
 import scala.collection.JavaConverters._
-
+/*
 class SparkCassBulkWriterSpec
   extends WordSpec
     with MustMatchers
@@ -87,3 +87,4 @@ class SparkCassBulkWriterSpec
     }
   }
 }
+*/

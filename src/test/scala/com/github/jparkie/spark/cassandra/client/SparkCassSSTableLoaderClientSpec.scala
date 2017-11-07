@@ -5,6 +5,7 @@ import com.github.jparkie.spark.cassandra.conf.SparkCassServerConf
 import org.apache.cassandra.tools.BulkLoadConnectionFactory
 import org.scalatest.{ MustMatchers, WordSpec }
 
+/*
 class SparkCassSSTableLoaderClientSpec extends WordSpec with MustMatchers with CassandraServerSpecLike {
   val testKeyspace = "test_keyspace"
   val testTable = "test_table"
@@ -88,3 +89,4 @@ class SparkCassSSTableLoaderClientSpec extends WordSpec with MustMatchers with C
     }
   }
 }
+*/
