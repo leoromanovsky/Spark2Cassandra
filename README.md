@@ -6,7 +6,7 @@ Spark Library for Bulk Loading into Cassandra
 
 ## Requirements
 
-Spark2Cassandra supports Spark 1.5 and above.
+Spark2Cassandra supports Spark 2.2 and above.
 
 # TODO: Does 3.0.0 it still work with Spark 1.5 ?
 
@@ -21,22 +21,15 @@ Spark2Cassandra supports Spark 1.5 and above.
 #### SBT
 
 ```scala
-libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "3.0.0"
-```
-
-Add the following resolver if needed:
-
-```scala
-resolvers += "Sonatype OSS Releases" at "https://oss.sonatype.org/content/repositories/releases"
-resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+libraryDependencies += "com.github.leoromanovsky" %% "spark2cassandra" % "3.0.0"
 ```
 
 #### Maven
 ```xml
 <dependency>
-  <groupId>com.github.jparkie</groupId>
+  <groupId>com.github.leoromanovsky</groupId>
   <artifactId>spark2cassandra_2.10</artifactId>
-  <version>x.y.z-SNAPSHOT</version>
+  <version>x.y.z</version>
 </dependency>
 ```
 
