@@ -2,7 +2,7 @@
 
 Spark Library for Bulk Loading into Cassandra
 
-[![Build Status](https://travis-ci.org/leoromanovsky/Spark2Cassandra.svg?branch=master)](https://travis-ci.org/jparkie/Spark2Cassandra)
+[![Build Status](https://travis-ci.org/leoromanovsky/Spark2Cassandra.svg?branch=master)](https://travis-ci.org/leoromanovsky/Spark2Cassandra)
 
 ## Requirements
 
