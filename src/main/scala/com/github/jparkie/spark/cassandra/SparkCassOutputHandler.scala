@@ -1,7 +1,7 @@
 package com.github.jparkie.spark.cassandra
 
 import org.apache.cassandra.utils.OutputHandler
-import org.slf4j.Logger
+import grizzled.slf4j.Logger
 
 /**
  * A wrapper for [[Logger]] for [[com.github.jparkie.spark.cassandra.client.SparkCassSSTableLoaderClient]].

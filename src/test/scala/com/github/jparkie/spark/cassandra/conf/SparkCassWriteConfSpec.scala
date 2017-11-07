@@ -8,9 +8,9 @@ class SparkCassWriteConfSpec extends WordSpec with MustMatchers {
   "SparkCassWriteConf" must {
     "be extracted from SparkConf successfully" in {
       val inputSparkConf = new SparkConf()
-        .set("spark.cassandra.bulk.write.partitioner", "org.apache.cassandra.dht.ByteOrderedPartitioner")
-        .set("spark.cassandra.bulk.write.throughput_mb_per_sec", "1")
-        .set("spark.cassandra.bulk.write.connection_per_host", "2")
+        .set("spark.cassandra_bulk.write.partitioner", "org.apache.cassandra.dht.ByteOrderedPartitioner")
+        .set("spark.cassandra_bulk.write.throughput_mb_per_sec", "1")
+        .set("spark.cassandra_bulk.write.connection_per_host", "2")
 
       val outputSparkCassWriteConf = SparkCassWriteConf.fromSparkConf(inputSparkConf)
 
@@ -34,7 +34,7 @@ class SparkCassWriteConfSpec extends WordSpec with MustMatchers {
 
     "reject invalid partitioner in SparkConf" in {
       val inputSparkConf = new SparkConf()
-        .set("spark.cassandra.bulk.write.partitioner", "N/A")
+        .set("spark.cassandra_bulk.write.partitioner", "N/A")
 
       intercept[IllegalArgumentException] {
         SparkCassWriteConf.fromSparkConf(inputSparkConf)

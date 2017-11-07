@@ -2,28 +2,26 @@
 
 Spark Library for Bulk Loading into Cassandra
 
-[![Build Status](https://travis-ci.org/jparkie/Spark2Cassandra.svg?branch=master)](https://travis-ci.org/jparkie/Spark2Cassandra)
+[![Build Status](https://travis-ci.org/leoromanovsky/Spark2Cassandra.svg?branch=master)](https://travis-ci.org/jparkie/Spark2Cassandra)
 
 ## Requirements
 
 Spark2Cassandra supports Spark 1.5 and above.
 
+# TODO: Does 3.0.0 it still work with Spark 1.5 ?
+
 | Spark2Cassandra Version | Cassandra Version |
 | ------------------------| ----------------- |
 | `2.1.X`                 | `2.1.5+`          |
 | `2.2.X`                 | `2.1.X`           |
+| `3.0.0`                 | `2.1.x`           |
 
 ## Downloads
 
 #### SBT
-```scala
-libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "2.1.0"
-```
-
-Or:
 
 ```scala
-libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "2.2.0"
+libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "3.0.0"
 ```
 
 Add the following resolver if needed:
@@ -62,6 +60,9 @@ val sparkConf = new SparkConf()
 val sc = SparkContext.getOrCreate(sparkConf)
 val sqlContext = SQLContext.getOrCreate(sc)
 
+// https://datastax-oss.atlassian.net/browse/SPARKC-475
+implicit val rwf: RowWriterFactory[Row] = SqlRowWriter.Factory
+
 val rdd = sc.parallelize(???)
 
 val df = sqlContext.read.parquet("<PATH>")
@@ -92,9 +93,9 @@ Refer to for more: [SparkCassWriteConf.scala](https://github.com/jparkie/Spark2C
 
 | Property Name                                       | Default                                     | Description |
 | --------------------------------------------------- |:-------------------------------------------:| ------------|
-| `spark.cassandra.bulk.write.partitioner`            | org.apache.cassandra.dht.Murmur3Partitioner | The 'partitioner' defined in cassandra.yaml. |
-| `spark.cassandra.bulk.write.throughput_mb_per_sec`  | Int.MaxValue                                | The maximum throughput to throttle. |
-| `spark.cassandra.bulk.write.connection_per_host`    | 1                                           | The number of connections per host to utilize when streaming SSTables. |
+| `spark.cassandra_bulk.write.partitioner`            | org.apache.cassandra.dht.Murmur3Partitioner | The 'partitioner' defined in cassandra.yaml. |
+| `spark.cassandra_bulk.write.throughput_mb_per_sec`  | Int.MaxValue                                | The maximum throughput to throttle. |
+| `spark.cassandra_bulk.write.connection_per_host`    | 1                                           | The number of connections per host to utilize when streaming SSTables. |
 
 ### SparkCassServerConf
 
@@ -102,18 +103,18 @@ Refer to for more: [SparkCassServerConf.scala](https://github.com/jparkie/Spark2
 
 | Property Name                                      | Default                                                   | Description |
 | -------------------------------------------------- |:---------------------------------------------------------:| ------------|
-| `spark.cassandra.bulk.server.storage.port`         | 7000                                                      | The 'storage_port' defined in cassandra.yaml. |
-| `spark.cassandra.bulk.server.sslStorage.port`      | 7001                                                      | The 'ssl_storage_port' defined in cassandra.yaml. |
-| `spark.cassandra.bulk.server.internode.encryption` | "none"                                                    | The 'server_encryption_options:internode_encryption' defined in cassandra.yaml. |
-| `spark.cassandra.bulk.server.keyStore.path`        | conf/.keystore                                            | The 'server_encryption_options:keystore' defined in cassandra.yaml. |
-| `spark.cassandra.bulk.server.keyStore.password`    | cassandra                                                 | The 'server_encryption_options:keystore_password' defined in cassandra.yaml. |
-| `spark.cassandra.bulk.server.trustStore.path`      | conf/.truststore                                          | The 'server_encryption_options:truststore' defined in cassandra.yaml. |
-| `spark.cassandra.bulk.server.trustStore.password`  | cassandra                                                 | The 'server_encryption_options:truststore_password' defined in cassandra.yaml. |
-| `spark.cassandra.bulk.server.protocol`             | TLS                                                       | The 'server_encryption_options:protocol' defined in cassandra.yaml. |
-| `spark.cassandra.bulk.server.algorithm`            | SunX509                                                   | The 'server_encryption_options:algorithm' defined in cassandra.yaml. |
-| `spark.cassandra.bulk.server.store.type`           | JKS                                                       | The 'server_encryption_options:store_type' defined in cassandra.yaml. |
-| `spark.cassandra.bulk.server.cipherSuites`         | TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA | The 'server_encryption_options:cipher_suites' defined in cassandra.yaml. |
-| `spark.cassandra.bulk.server.requireClientAuth`    | false                                                     | The 'server_encryption_options:require_client_auth' defined in cassandra.yaml. |
+| `spark.cassandra_bulk.server.storage.port`         | 7000                                                      | The 'storage_port' defined in cassandra.yaml. |
+| `spark.cassandra_bulk.server.sslStorage.port`      | 7001                                                      | The 'ssl_storage_port' defined in cassandra.yaml. |
+| `spark.cassandra_bulk.server.internode.encryption` | "none"                                                    | The 'server_encryption_options:internode_encryption' defined in cassandra.yaml. |
+| `spark.cassandra_bulk.server.keyStore.path`        | conf/.keystore                                            | The 'server_encryption_options:keystore' defined in cassandra.yaml. |
+| `spark.cassandra_bulk.server.keyStore.password`    | cassandra                                                 | The 'server_encryption_options:keystore_password' defined in cassandra.yaml. |
+| `spark.cassandra_bulk.server.trustStore.path`      | conf/.truststore                                          | The 'server_encryption_options:truststore' defined in cassandra.yaml. |
+| `spark.cassandra_bulk.server.trustStore.password`  | cassandra                                                 | The 'server_encryption_options:truststore_password' defined in cassandra.yaml. |
+| `spark.cassandra_bulk.server.protocol`             | TLS                                                       | The 'server_encryption_options:protocol' defined in cassandra.yaml. |
+| `spark.cassandra_bulk.server.algorithm`            | SunX509                                                   | The 'server_encryption_options:algorithm' defined in cassandra.yaml. |
+| `spark.cassandra_bulk.server.store.type`           | JKS                                                       | The 'server_encryption_options:store_type' defined in cassandra.yaml. |
+| `spark.cassandra_bulk.server.cipherSuites`         | TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA | The 'server_encryption_options:cipher_suites' defined in cassandra.yaml. |
+| `spark.cassandra_bulk.server.requireClientAuth`    | false                                                     | The 'server_encryption_options:require_client_auth' defined in cassandra.yaml. |
 
 ## Documentation
 

@@ -14,10 +14,11 @@ import com.datastax.spark.connector.{ CollectionColumnName, ColumnRef, ColumnSel
 import com.github.jparkie.spark.cassandra.client.{ SparkCassSSTableLoaderClient, SparkCassSSTableLoaderClientManager }
 import com.github.jparkie.spark.cassandra.conf.{ SparkCassServerConf, SparkCassWriteConf }
 import com.github.jparkie.spark.cassandra.util.SparkCassException
+import grizzled.slf4j.Logging
 import org.apache.cassandra.config.DatabaseDescriptor
 import org.apache.cassandra.io.sstable.{ CQLSSTableWriter, SSTableLoader }
 import org.apache.commons.io.FileUtils
-import org.apache.spark.{ Logging, TaskContext }
+import org.apache.spark.TaskContext
 
 import scala.collection.JavaConverters._
 
@@ -131,7 +132,7 @@ class SparkCassBulkWriter[T](
       .withPartitioner(sparkCassWriteConf.getIPartitioner)
     val ssTableWriter = ssTableBuilder.build()
 
-    logInfo(s"Writing rows to temporary SSTables in ${ssTableDirectory.getAbsolutePath}.")
+    info(s"Writing rows to temporary SSTables in ${ssTableDirectory.getAbsolutePath}.")
 
     val startTime = System.nanoTime()
 
@@ -158,13 +159,13 @@ class SparkCassBulkWriter[T](
     val endTime = System.nanoTime()
     val duration = (endTime - startTime) / 1000000000d
 
-    logInfo(s"Wrote rows to temporary SSTables in ${ssTableDirectory.getAbsolutePath} in $duration%.3f s.")
+    info(s"Wrote rows to temporary SSTables in ${ssTableDirectory.getAbsolutePath} in $duration%.3f s.")
   }
 
   private[cassandra] def streamSSTables(ssTableDirectory: File, sparkCassSSTableLoaderClient: SparkCassSSTableLoaderClient): Unit = {
     val currentConnectionsPerHost = sparkCassWriteConf.connectionsPerHost
-    val currentOutputHandler = new SparkCassOutputHandler(log)
-    val currentStreamEventHandler = new SparkCassStreamEventHandler(log)
+    val currentOutputHandler = new SparkCassOutputHandler(logger)
+    val currentStreamEventHandler = new SparkCassStreamEventHandler(logger)
 
     val ssTableLoader = new SSTableLoader(
       ssTableDirectory,
@@ -196,7 +197,7 @@ class SparkCassBulkWriter[T](
   def write(taskContext: TaskContext, data: Iterator[T]): Unit = {
     val tempSSTableDirectory = prepareSSTableDirectory()
 
-    logInfo(s"Created temporary file directory for SSTables at ${tempSSTableDirectory.getAbsolutePath}.")
+    info(s"Created temporary file directory for SSTables at ${tempSSTableDirectory.getAbsolutePath}.")
 
     try {
       val ssTableLoaderClient = SparkCassSSTableLoaderClientManager.getClient(cassandraConnector, sparkCassServerConf)
@@ -206,7 +207,7 @@ class SparkCassBulkWriter[T](
 
       streamSSTables(tempSSTableDirectory, ssTableLoaderClient)
 
-      logInfo(s"Finished stream of SSTables from ${tempSSTableDirectory.getAbsolutePath}.")
+      info(s"Finished stream of SSTables from ${tempSSTableDirectory.getAbsolutePath}.")
     } finally {
       if (tempSSTableDirectory.exists()) {
         FileUtils.deleteDirectory(tempSSTableDirectory)

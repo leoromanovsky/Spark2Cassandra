@@ -4,6 +4,7 @@ import com.github.jparkie.spark.cassandra.CassandraServerSpecLike
 import com.github.jparkie.spark.cassandra.conf.SparkCassServerConf
 import org.scalatest.{ MustMatchers, WordSpec }
 
+/*
 class SparkCassSSTableLoaderClientManagerSpec extends WordSpec with MustMatchers with CassandraServerSpecLike {
   "SparkCassSSTableLoaderClientManager" must {
     "return one SparkCassSSTableLoaderClient in getClient()" in {
@@ -30,3 +31,4 @@ class SparkCassSSTableLoaderClientManagerSpec extends WordSpec with MustMatchers
     }
   }
 }
+*/
