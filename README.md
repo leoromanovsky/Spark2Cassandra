@@ -6,15 +6,13 @@ Spark Library for Bulk Loading into Cassandra
 
 ## Requirements
 
-Spark2Cassandra supports Spark 2.2 and above.
+Spark2Cassandra supports Spark 2.2. 
 
-# TODO: Does 3.0.0 it still work with Spark 1.5 ?
+It is compatible with the following versions of Cassandra:
 
-| Spark2Cassandra Version | Cassandra Version |
-| ------------------------| ----------------- |
-| `2.1.X`                 | `2.1.5+`          |
-| `2.2.X`                 | `2.1.X`           |
-| `3.0.0`                 | `2.1.x`           |
+* `2.1.5+`
+* `2.2`
+* `3.0.x`
 
 ## Downloads
 
@@ -28,7 +26,7 @@ libraryDependencies += "com.github.leoromanovsky" %% "spark2cassandra" % "3.0.0"
 ```xml
 <dependency>
   <groupId>com.github.leoromanovsky</groupId>
-  <artifactId>spark2cassandra_2.10</artifactId>
+  <artifactId>spark2cassandra_2.11</artifactId>
   <version>x.y.z</version>
 </dependency>
 ```
