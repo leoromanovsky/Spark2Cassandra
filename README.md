@@ -31,10 +31,8 @@ libraryDependencies += "com.github.leoromanovsky" %% "spark2cassandra" % "3.0.0"
 </dependency>
 ```
 
-It is planned for Spark2Cassandra to be available on the following:
-- http://spark-packages.org/
-
 ## Features
+
 - Utilizes Cassandra Java classes with https://github.com/datastax/spark-cassandra-connector to serialize `RDD`s or `DataFrame`s to SSTables.
 - Streams SSTables to Cassandra nodes.
 
@@ -71,8 +69,9 @@ df.bulkLoadToCass(
 )
 ```
 
-Refer to for more: [SparkCassRDDFunction.scala](https://github.com/jparkie/Spark2Cassandra/blob/master/src/main/scala/com/github/jparkie/spark/cassandra/rdd/SparkCassRDDFunctions.scala)
-Refer to for more: [SparkCassDataFrameFunctions.scala](https://github.com/jparkie/Spark2Cassandra/blob/master/src/main/scala/com/github/jparkie/spark/cassandra/sql/SparkCassDataFrameFunctions.scala)
+For more information, refer to: 
+* [SparkCassRDDFunction.scala](https://github.com/jparkie/Spark2Cassandra/blob/master/src/main/scala/com/github/jparkie/spark/cassandra/rdd/SparkCassRDDFunctions.scala)
+* [SparkCassDataFrameFunctions.scala](https://github.com/jparkie/Spark2Cassandra/blob/master/src/main/scala/com/github/jparkie/spark/cassandra/sql/SparkCassDataFrameFunctions.scala)
 
 ## Configurations
 
@@ -106,7 +105,3 @@ Refer to for more: [SparkCassServerConf.scala](https://github.com/jparkie/Spark2
 | `spark.cassandra_bulk.server.store.type`           | JKS                                                       | The 'server_encryption_options:store_type' defined in cassandra.yaml. |
 | `spark.cassandra_bulk.server.cipherSuites`         | TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA | The 'server_encryption_options:cipher_suites' defined in cassandra.yaml. |
 | `spark.cassandra_bulk.server.requireClientAuth`    | false                                                     | The 'server_encryption_options:require_client_auth' defined in cassandra.yaml. |
-
-## Documentation
-
-Scaladocs are currently unavailable.
