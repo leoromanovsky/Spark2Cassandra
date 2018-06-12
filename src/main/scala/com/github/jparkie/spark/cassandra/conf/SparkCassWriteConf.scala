@@ -80,6 +80,11 @@ object SparkCassWriteConf {
     default = 1
   )
 
+  val SPARK_CASSANDRA_BULK_WRITE_TTL = SparkCassConfParam[Int](
+    name = "spark.cassandra_bulk.write.ttl",
+    default = Int.MaxValue
+  )
+
   /**
    * Extracts [[SparkCassWriteConf]] from a [[SparkConf]].
    *
@@ -99,6 +104,10 @@ object SparkCassWriteConf {
       SPARK_CASSANDRA_BULK_WRITE_CONNECTIONS_PER_HOST.name,
       SPARK_CASSANDRA_BULK_WRITE_CONNECTIONS_PER_HOST.default
     )
+    val tempTtl = sparkConf.getInt(
+      SPARK_CASSANDRA_BULK_WRITE_TTL.name,
+      SPARK_CASSANDRA_BULK_WRITE_TTL.default
+    )
 
     require(
       AllowedPartitioners.contains(tempPartitioner),
@@ -109,7 +118,8 @@ object SparkCassWriteConf {
     SparkCassWriteConf(
       partitioner = tempPartitioner,
       throughputMiBPS = tempThroughputMiBPS,
-      connectionsPerHost = tempConnectionsPerHost
+      connectionsPerHost = tempConnectionsPerHost,
+      ttl = if (tempTtl == SPARK_CASSANDRA_BULK_WRITE_TTL.default) TTLOption.defaultValue else TTLOption.constant(tempTtl)
     )
   }
 }
