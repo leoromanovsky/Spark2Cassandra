@@ -80,25 +80,4 @@ assemblyShadeRules in assembly := Seq(
   ShadeRule.rename("com.google.thirdparty.publicsuffix.**" -> s"s2c.google.thirdparty.publicsuffix.@1").inAll
 )
 
-/**
-  * Release:
-  * https://github.com/xerial/sbt-sonatype
-  */
-import ReleaseTransformations._
-
-releasePublishArtifactsAction := PgpKeys.publishSigned.value
-
-releaseProcess := Seq[ReleaseStep](
-  checkSnapshotDependencies,
-  inquireVersions,
-  runClean,
-  runTest,
-  setReleaseVersion,
-  commitReleaseVersion,
-  tagRelease,
-  releaseStepCommand("publishSigned"),
-  setNextVersion,
-  commitNextVersion,
-  releaseStepCommand("sonatypeReleaseAll"),
-  pushChanges
-)
+enablePlugins(JarPublishingPlugin)
