@@ -102,3 +102,10 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommand("sonatypeReleaseAll"),
   pushChanges
 )
+
+publishMavenStyle := true
+publishTo := Some(if (isSnapshot.value)
+  "Teads Snapshots" at "https://nexus.teads.net/content/repositories/snapshots"
+else
+  "Teads Releases" at "https://nexus.teads.net/content/repositories/releases")
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
