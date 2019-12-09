@@ -5,8 +5,8 @@ import com.datastax.spark.connector.AllColumns
 import com.datastax.spark.connector.writer.{ RowWriterFactory, SqlRowWriter }
 import com.github.jparkie.spark.cassandra.client.SparkCassSSTableLoaderClientManager
 import org.scalatest.{ MustMatchers, WordSpec }
-import com.github.jparkie.spark.cassandra.conf.{SparkCassServerConf, SparkCassWriteConf}
-import com.holdenkarau.spark.testing.{DataFrameSuiteBase, SharedSparkContext}
+import com.github.jparkie.spark.cassandra.conf.{ SparkCassServerConf, SparkCassWriteConf }
+import com.holdenkarau.spark.testing.{ DataFrameSuiteBase, SharedSparkContext }
 import org.apache.spark.sql.Row
 
 import scala.collection.JavaConverters._

@@ -17,19 +17,19 @@ licenses := Seq(("Apache License, Version 2.0", url("http://www.apache.org/licen
 /**
   * Scala:
   */
-scalaVersion       := "2.11.8"
-crossScalaVersions := Seq("2.11.8")
+scalaVersion       := "2.12.10"
+crossScalaVersions := Seq("2.12.10")
 
 /**
   * Library Dependencies:
   */
 
 // Versions:
-val SparkVersion                   = "2.2.0"
-val SparkTestVersion               = "2.2.0_0.7.2"
+val SparkVersion                   = "2.4.3"
+val SparkTestVersion               = "2.4.3_0.12.0"
 val ScalaTestVersion               = "3.0.4"
 val LogVersion                     = "1.3.0"
-val SparkCassandraConnectorVersion = "2.0.5"
+val SparkCassandraConnectorVersion = "2.4.2"
 val CassandraAllVersion            = "3.9"
 val CassandraUnitVersion           = "3.1.1.0"
 
