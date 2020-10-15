@@ -18,7 +18,6 @@ licenses := Seq(("Apache License, Version 2.0", url("http://www.apache.org/licen
   * Scala:
   */
 scalaVersion       := "2.12.10"
-crossScalaVersions := Seq("2.12.10")
 
 /**
   * Library Dependencies:
@@ -34,9 +33,8 @@ val CassandraAllVersion            = "3.9"
 val CassandraUnitVersion           = "3.1.1.0"
 
 // Dependencies:
-val sparkCore       = "org.apache.spark"     %% "spark-core"                % SparkVersion                   % "provided"
-val sparkSql        = "org.apache.spark"     %% "spark-sql"                 % SparkVersion                   % "provided"
-val sparkTest       = "com.holdenkarau"      %% "spark-testing-base"        % SparkTestVersion               % "test"
+val sparkCore       = "org.apache.spark"     %% "spark-core"                % SparkVersion                   % "provided, test"
+val sparkSql        = "org.apache.spark"     %% "spark-sql"                 % SparkVersion                   % "provided, test"
 val scalaTest       = "org.scalatest"        %% "scalatest"                 % ScalaTestVersion               % "test"
 val logger          = "org.clapper"          %% "grizzled-slf4j"            % LogVersion
 val ssc             = "com.datastax.spark"   %% "spark-cassandra-connector" % SparkCassandraConnectorVersion
@@ -44,7 +42,7 @@ val cassandraAll    = "org.apache.cassandra" %  "cassandra-all"             % Ca
 val cassandraClient = "org.apache.cassandra" %  "cassandra-clientutil"      % CassandraAllVersion
 val cassandraUnit   = "org.cassandraunit"    %  "cassandra-unit"            % CassandraUnitVersion           % "test"
 
-libraryDependencies ++= Seq(sparkCore, sparkSql, sparkTest, scalaTest, logger, ssc, cassandraAll, cassandraUnit)
+libraryDependencies ++= Seq(sparkCore, sparkSql, scalaTest, logger, ssc, cassandraAll, cassandraUnit)
 
 excludeDependencies += "org.slf4j" % "slf4j-log4j12"
 
