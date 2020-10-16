@@ -4,7 +4,8 @@ import java.io.File
 import java.net.InetAddress
 import java.util.UUID
 
-import com.datastax.driver.core.{ PreparedStatement, Session }
+import com.datastax.oss.driver.api.core.CqlSession
+import com.datastax.oss.driver.api.core.cql.PreparedStatement
 import com.datastax.spark.connector.cql.{ CassandraConnector, ColumnDef, Schema, TableDef }
 import com.datastax.spark.connector.types.ColumnType
 import com.datastax.spark.connector.util.CountingIterator
@@ -76,7 +77,7 @@ class SparkCassBulkWriter[T](
 
   private[cassandra] val insertTemplate: String = initializeInsertTemplate()
 
-  private[cassandra] def prepareDataStatement(session: Session): PreparedStatement = {
+  private[cassandra] def prepareDataStatement(session: CqlSession): PreparedStatement = {
     try {
       session.prepare(insertTemplate)
     } catch {
@@ -138,7 +139,7 @@ class SparkCassBulkWriter[T](
 
     val rowIterator = new CountingIterator(data)
     val rowColumnNames = rowWriter.columnNames.toIndexedSeq
-    val rowColumnTypes = rowColumnNames.map(statement.getVariables.getType)
+    val rowColumnTypes = rowColumnNames.map(statement.getVariableDefinitions.get(_).getType)
     val rowConverters = rowColumnTypes.map(ColumnType.converterToCassandra)
     val rowBuffer = Array.ofDim[Any](columnNames.size)
     for (currentData <- rowIterator) {
@@ -236,7 +237,7 @@ object SparkCassBulkWriter {
       )
   }
 
-  private[cassandra] def checkNoCollectionBehaviors(table: TableDef, columnRefs: IndexedSeq[ColumnRef]) {
+  private[cassandra] def checkNoCollectionBehaviors(columnRefs: IndexedSeq[ColumnRef]) {
     if (columnRefs.exists(_.isInstanceOf[CollectionColumnName]))
       throw new IllegalArgumentException(
         s"Collection behaviors (add/remove/append/prepend) are not allowed on collection columns"
@@ -247,7 +248,7 @@ object SparkCassBulkWriter {
     val columnNames = columnRefs.map(_.columnName)
     checkMissingColumns(table, columnNames)
     checkMissingPrimaryKeyColumns(table, columnNames)
-    checkNoCollectionBehaviors(table, columnRefs)
+    checkNoCollectionBehaviors(columnRefs)
   }
 
   def apply[T: RowWriterFactory](
@@ -258,7 +259,7 @@ object SparkCassBulkWriter {
     sparkCassWriteConf:  SparkCassWriteConf,
     sparkCassServerConf: SparkCassServerConf
   ): SparkCassBulkWriter[T] = {
-    val schema = Schema.fromCassandra(connector, Some(keyspaceName), Some(tableName))
+    val schema = Schema.fromCassandra(connector.openSession, Some(keyspaceName), Some(tableName))
     val tableDef = schema.tables.headOption
       .getOrElse(throw new SparkCassException(s"Table not found: $keyspaceName.$tableName"))
     val selectedColumns = columnNames.selectFrom(tableDef)

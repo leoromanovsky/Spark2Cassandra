@@ -1,6 +1,6 @@
 package com.github.jparkie.spark.cassandra.conf
 
-import com.datastax.driver.core.DataType
+import com.datastax.oss.driver.api.core.`type`.{ DataType, DataTypes }
 import com.datastax.spark.connector.cql.{ ColumnDef, RegularColumn }
 import com.datastax.spark.connector.types.ColumnType
 import com.datastax.spark.connector.writer.{ PerRowWriteOptionValue, TTLOption, TimestampOption, WriteOption }
@@ -52,7 +52,7 @@ case class SparkCassWriteConf(
       case _ => None
     }
 
-    Seq(toRegularColDef(ttl, DataType.cint()), toRegularColDef(timestamp, DataType.bigint())).flatten
+    Seq(toRegularColDef(ttl, DataTypes.INT), toRegularColDef(timestamp, DataTypes.BIGINT)).flatten
   }
 
   val throttlingEnabled = throughputMiBPS < SparkCassWriteConf.SPARK_CASSANDRA_BULK_WRITE_THROUGHPUT_MB_PER_SEC.default

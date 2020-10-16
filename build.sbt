@@ -27,7 +27,7 @@ scalaVersion       := "2.12.10"
 val SparkVersion                   = "2.4.3"
 val ScalaTestVersion               = "3.0.4"
 val LogVersion                     = "1.3.0"
-val SparkCassandraConnectorVersion = "2.4.2"
+val SparkCassandraConnectorVersion = "2.5.1"
 val CassandraAllVersion            = "3.9"
 val CassandraUnitVersion           = "3.1.1.0"
 

@@ -1,8 +1,8 @@
 package com.github.jparkie.spark.cassandra.client
 
-import com.github.jparkie.spark.cassandra.CassandraServerSpecLike
-import com.github.jparkie.spark.cassandra.conf.SparkCassServerConf
-import org.scalatest.{ MustMatchers, WordSpec }
+//import com.github.jparkie.spark.cassandra.CassandraServerSpecLike
+//import com.github.jparkie.spark.cassandra.conf.SparkCassServerConf
+//import org.scalatest.{ MustMatchers, WordSpec }
 
 /*
 class SparkCassSSTableLoaderClientManagerSpec extends WordSpec with MustMatchers with CassandraServerSpecLike {

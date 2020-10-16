@@ -1,6 +1,6 @@
 package com.github.jparkie.spark.cassandra.client
 
-import java.net.InetAddress
+import java.net.{ InetAddress, InetSocketAddress }
 
 import com.datastax.spark.connector.cql.{ AuthConf, CassandraConnector }
 import com.github.jparkie.spark.cassandra.conf.SparkCassServerConf
@@ -10,9 +10,7 @@ import scala.collection.mutable
 
 private[cassandra] trait SparkCassSSTableLoaderClientManager extends Serializable with Logging {
   case class SessionKey(
-    hosts:               Set[InetAddress],
-    port:                Int,
-    authConf:            AuthConf,
+    hosts:               Set[InetSocketAddress],
     sparkCassServerConf: SparkCassServerConf
   ) extends Serializable
 
@@ -23,7 +21,7 @@ private[cassandra] trait SparkCassSSTableLoaderClientManager extends Serializabl
     cassandraConnector:  CassandraConnector,
     sparkCassServerConf: SparkCassServerConf
   ): SessionKey = {
-    SessionKey(cassandraConnector.hosts, cassandraConnector.port, cassandraConnector.authConf, sparkCassServerConf)
+    SessionKey(cassandraConnector.hosts, sparkCassServerConf)
   }
 
   private[client] def buildClient(
